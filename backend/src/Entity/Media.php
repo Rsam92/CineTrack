@@ -28,6 +28,7 @@ use Doctrine\ORM\Mapping as ORM;
         new Delete()
     ]
 )]
+
 class Media
 {
     #[ORM\Id]
@@ -51,15 +52,63 @@ class Media
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
-    public function getId(): ?int { return $this->id; }
-    public function getTitle(): ?string { return $this->title; }
-    public function setTitle(string $title): static { $this->title = $title; return $this; }
-    public function getType(): ?string { return $this->type; }
-    public function setType(string $type): static { $this->type = $type; return $this; }
-    public function isWatched(): ?bool { return $this->watched; }
-    public function setWatched(bool $watched): static { $this->watched = $watched; return $this; }
-    public function getRating(): ?int { return $this->rating; }
-    public function setRating(?int $rating): static { $this->rating = $rating; return $this; }
-    public function getUser(): ?User { return $this->user; }
-    public function setUser(?User $user): static { $this->user = $user; return $this; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(string $title): static
+    {
+        $this->title = $title;
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): static
+    {
+        $this->type = $type;
+        return $this;
+    }
+
+    public function isWatched(): ?bool
+    {
+        return $this->watched;
+    }
+
+    public function setWatched(bool $watched): static
+    {
+        $this->watched = $watched;
+        return $this;
+    }
+
+    public function getRating(): ?int
+    {
+        return $this->rating;
+    }
+
+    public function setRating(?int $rating): static
+    {
+        $this->rating = $rating;
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+    
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
+        return $this;
+    }
 }
