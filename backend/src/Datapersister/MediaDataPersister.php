@@ -1,12 +1,12 @@
 <?php
+
 namespace App\DataPersister;
 
-use ApiPlatform\Doctrine\Orm\DataPersister\ContextAwareDataPersisterInterface;
 use App\Entity\Media;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Security\Core\Security;
+use Symfony\Bundle\SecurityBundle\Security;
 
-final class MediaDataPersister implements ContextAwareDataPersisterInterface
+final class MediaDataPersister
 {
     private EntityManagerInterface $em;
     private Security $security;
@@ -17,22 +17,30 @@ final class MediaDataPersister implements ContextAwareDataPersisterInterface
         $this->security = $security;
     }
 
-    public function supports($data, array $context = []): bool
+    // Vérifie si ce DataPersister gère cette entité
+    public function supports($data): bool
     {
         return $data instanceof Media;
     }
 
-    public function persist($data, array $context = [])
+    // Persiste l'entité Media
+    public function persist($data)
     {
         if (!$data->getUser()) {
-            $data->setUser($this->security->getUser());
+            $user = $this->security->getUser();
+            if ($user) {
+                $data->setUser($user);
+            }
         }
+
         $this->em->persist($data);
         $this->em->flush();
+
         return $data;
     }
 
-    public function remove($data, array $context = [])
+    // Supprime l'entité Media
+    public function remove($data)
     {
         $this->em->remove($data);
         $this->em->flush();
