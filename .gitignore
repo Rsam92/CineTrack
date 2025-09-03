@@ -1,0 +1,25 @@
+# --- Symfony / PHP (backend) ---
+/backend/var/
+/backend/vendor/
+/backend/.env.local
+/backend/.env.*.local
+/backend/config/secrets/prod/prod.decrypt.private.php
+/backend/public/bundles/
+/backend/public/assets/
+/backend/assets/vendor/
+/backend/.phpunit.cache/
+/backend/phpunit.xml
+/backend/config/jwt/*.pem
+
+# --- Node.js / React (client) ---
+/client/node_modules/
+/client/build/
+/client/.env
+/client/.env.local
+/client/.env.*.local
+
+# --- IDE & System ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
