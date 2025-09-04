@@ -1,73 +1,65 @@
-import { useEffect, useState } from "react";
+// src/pages/SeriesPage.jsx
+import React, { useEffect, useState } from "react";
+import MediaForm from "../components/MediaForm";
 import api from "../services/api";
 
 export default function SeriesPage() {
   const [series, setSeries] = useState([]);
-  const [title, setTitle] = useState("");
-  const [season, setSeason] = useState(1);
-  const [episode, setEpisode] = useState(1);
+  const [mediaToEdit, setMediaToEdit] = useState(null);
 
-  // Charger les séries
-  useEffect(() => {
-    api.get("/series")
-      .then(res => setSeries(res.data["hydra:member"] || []))
-      .catch(err => console.error("Erreur chargement séries", err));
-  }, []);
-
-  // Ajouter une série
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const fetchSeries = async () => {
     try {
-      const res = await api.post("/series", {
-        title,
-        season,
-        episode,
-      });
-      setSeries([...series, res.data]);
-      setTitle("");
-      setSeason(1);
-      setEpisode(1);
+      const response = await api.get("/media");
+      const allMedia = response.data?.["hydra:member"] || [];
+      setSeries(allMedia.filter(m => m.type === "series"));
     } catch (err) {
-      console.error("Erreur ajout série", err);
+      console.error("Erreur récupération séries :", err);
     }
   };
 
+  useEffect(() => {
+    fetchSeries();
+  }, []);
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Supprimer cette série ?")) return;
+    try {
+      await api.delete(`/media/${id}`);
+      fetchSeries();
+    } catch (err) {
+      console.error(err);
+      alert("Erreur lors de la suppression.");
+    }
+  };
+
+  const renderCard = (serie) => (
+    <div key={serie.id} className="border p-4 rounded shadow flex flex-col justify-between">
+      <h3 className="font-bold text-lg">{serie.title}</h3>
+      <p>Saison {serie.season}, Épisode {serie.episode}</p>
+      {serie.rating && <p>Note: {serie.rating}/10</p>}
+      <p>{serie.watched ? "✔ Vu" : "❌ Non vu"}</p>
+      <div className="mt-2 flex space-x-2">
+        <button onClick={() => setMediaToEdit(serie)}>✏️</button>
+        <button onClick={() => handleDelete(serie.id)}>🗑️</button>
+      </div>
+    </div>
+  );
+
   return (
-    <div>
-      <h2>📺 Mes Séries</h2>
+    <div className="p-6">
+      <MediaForm
+        key={mediaToEdit ? mediaToEdit.id : "new"}
+        mediaToEdit={mediaToEdit}
+        onCreated={fetchSeries}
+        onUpdated={() => { fetchSeries(); setMediaToEdit(null); }}
+        onCancel={() => setMediaToEdit(null)}
+        fixedType="series" // le type est forcé
+      />
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Titre de la série"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-        />
-        <input
-          type="number"
-          placeholder="Saison"
-          value={season}
-          onChange={(e) => setSeason(parseInt(e.target.value))}
-          min="1"
-        />
-        <input
-          type="number"
-          placeholder="Épisode"
-          value={episode}
-          onChange={(e) => setEpisode(parseInt(e.target.value))}
-          min="1"
-        />
-        <button type="submit">Ajouter</button>
-      </form>
-
-      <ul>
-        {series.map((s) => (
-          <li key={s.id}>
-            {s.title} - Saison {s.season}, Épisode {s.episode}
-          </li>
-        ))}
-      </ul>
+      <h1 className="text-3xl font-bold mb-4 border-b-2 border-indigo-600 pb-2">Séries</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {series.length > 0 ? series.map(renderCard) : <p>Aucune série pour le moment.</p>}
+      </div>
     </div>
   );
 }

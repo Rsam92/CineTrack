@@ -1,45 +1,47 @@
-import { useState } from 'react';
-import api from '../api/api';
+import React, { useState } from "react";
+import api from "../services/api";
+import { useNavigate } from "react-router-dom";
 
-export default function Login({ onNavigate }) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+export default function Login() {
+  const [email, setEmail] = useState("");  // email obligatoire selon ton backend
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
-  const handleSubmit = async e => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await api.post('/login', { email, password });
-      localStorage.setItem('jwt', res.data.token);
-      onNavigate('dashboard'); // navigue vers le dashboard après login
+      const response = await api.post("/login", { email, password });
+      const token = response.data.token;
+      localStorage.setItem("jwt", token); // stockage JWT
+      navigate("/");
     } catch (err) {
-      alert('Erreur de connexion');
+      console.error(err);
+      alert("Identifiants incorrects");
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Login</h2>
+    <form onSubmit={handleLogin} className="max-w-sm mx-auto mt-20 p-6 bg-white rounded shadow">
+      <h1 className="text-2xl font-bold mb-4">Se connecter</h1>
       <input
+        type="email"
         placeholder="Email"
         value={email}
-        onChange={e => setEmail(e.target.value)}
+        onChange={(e) => setEmail(e.target.value)}
+        className="border p-2 w-full mb-2 rounded"
+        required
       />
       <input
         type="password"
-        placeholder="Password"
+        placeholder="Mot de passe"
         value={password}
-        onChange={e => setPassword(e.target.value)}
+        onChange={(e) => setPassword(e.target.value)}
+        className="border p-2 w-full mb-4 rounded"
+        required
       />
-      <button>Se connecter</button>
-      <p>
-        Pas encore inscrit ?{' '}
-        <span
-          style={{ color: 'blue', cursor: 'pointer' }}
-          onClick={() => onNavigate('register')}
-        >
-          Inscription
-        </span>
-      </p>
+      <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded w-full hover:bg-blue-700">
+        Se connecter
+      </button>
     </form>
   );
 }

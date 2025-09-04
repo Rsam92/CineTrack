@@ -1,23 +1,24 @@
-import { useState } from "react";
+import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Dashboard from "./components/Dashboard";
-import MediaForm from "./components/MediaForm";
-import FilmForm from "./components/FilmForm";
-import SeriesForm from "./components/SeriesForm";
+import FilmsPage from "./pages/FilmsPage";
+import SeriesPage from "./pages/SeriesPage";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 export default function App() {
-  const [view, setView] = useState("dashboard");
-
-  const handleNavigate = page => setView(page);
-  const handleCreated = () => setView("dashboard");
-
   return (
-    <div>
-      <Navbar onNavigate={handleNavigate} />
-      {view === "dashboard" && <Dashboard />}
-      {view === "mediaForm" && <MediaForm onCreated={handleCreated} />}
-      {view === "films" && <FilmForm onCreated={handleCreated} />}
-      {view === "series" && <SeriesForm onCreated={handleCreated} />}
+    <div className="min-h-screen bg-gray-100 text-gray-900">
+      <Navbar />
+      <div className="p-4">
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/films" element={<FilmsPage />} />
+          <Route path="/series" element={<SeriesPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </div>
     </div>
   );
 }
